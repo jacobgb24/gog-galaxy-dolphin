@@ -3,39 +3,48 @@ import subprocess
 import sys
 from abc import ABC
 from pathlib import Path
-from typing import List
+from typing import List, Dict, Union
+import shlex
 
 import utils
 from galaxy.api.consts import Platform
 from galaxy.api.plugin import Plugin, create_and_run_plugin, logger
-from galaxy.api.types import Authentication
+from galaxy.api.types import Authentication, NextStep
 import os
-
-# TODO: make configurable
-dolphin_exe = Path(r"D:\Dolphin-x64\Dolphin.exe")
-dolphin_dir = r"D:\Dolphin Games"
 
 
 class GOGDolphinPlugin(Plugin, ABC):
     def __init__(self, reader, writer, token):
         self.manifest_data = utils.get_manifest()
+        self.config_data = utils.get_config()
 
         super().__init__(Platform(self.manifest_data['platform']), self.manifest_data['version'], reader, writer, token)
         self.games: List[utils.DolphinGame] = []
         # self.game_times = get_the_game_times()
 
-    async def authenticate(self, stored_credentials=None):
-        return Authentication("id", "name")  # TODO: better set up here
+    async def authenticate(self, stored_credentials=None) -> Union[NextStep, Authentication]:
+        if not self.config_data['dolphin_path'] or not self.config_data['games_path']:
+            return NextStep('web_session', utils.SETUP_WEB_PARAMS)
+        return Authentication("Dolphin", "Dolphin")  # don't care about authentication values
+
+    async def pass_login_credentials(self, step: str, credentials: Dict[str, str], cookies: List[Dict[str, str]]) \
+            -> Union[NextStep, Authentication]:
+        paths = utils.parse_get_params(credentials["end_uri"])
+        logger.critical(f'CREDS: {paths}')
+        self.config_data.update(paths)
+        utils.write_config(self.config_data)
+        return Authentication("Dolphin", "Dolphin")  # don't care about authentication values
 
     async def launch_game(self, game_id):
         for game in self.games:
             if game.game_id == game_id:
-                dolphin_path = str(dolphin_exe if game.dolphin_path is None else game.dolphin_path)
-                logger.critical(f'launching {game_id} via path: {dolphin_path}')
-                subprocess.Popen([dolphin_path, "-b", "-e", str(game.path)])
-                    # subprocess.Popen(
-                    #     [os.path.dirname(os.path.realpath(__file__)) + r'\TimeTracker.exe', game_id, game_id])
+                dolphin_exe = Path(r"D:\Dolphin-x64\Dolphin.exe")
 
+                dolphin_path = Path(self.config_data['dolphin_path'] if game.dolphin_path is None else game.dolphin_path)
+                logger.critical(f'launching {game_id} via path: `{dolphin_path}` before we had `{dolphin_exe}`')
+                logger.critical(f'game path: `{game.path}`')
+                process_str = f'{utils.path2subopen(dolphin_path)} -b -e {utils.path2subopen(game.path)}'
+                subprocess.Popen(shlex.split(process_str))
                 break
         return
 
@@ -64,16 +73,16 @@ class GOGDolphinPlugin(Plugin, ABC):
 
     def get_dolphin_games(self):
         games = []
-        for root, dirs, files in os.walk(dolphin_dir):
-            for file in files:
-                full_path = Path(root) / file
-                # only add games for the given platform
-                if utils.get_game_platform(full_path).value == self.manifest_data["platform"]:
-                    games.append(utils.DolphinGame(full_path))
-                # TODO look at custom config here
+        path = Path(self.config_data['games_path'])
+        for file in [f for f in path.glob('**/*') if f.is_file()]:
+            # only add games for the given platform
+            if utils.get_game_platform(file).value == self.manifest_data["platform"]:
+                games.append(utils.DolphinGame(file))
+            # TODO look at custom config here
 
         return games
 
+    # need these stubbed out for API
     async def install_game(self, game_id):
         pass
 

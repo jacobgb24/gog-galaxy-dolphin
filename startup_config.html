@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+    <style>
+body {
+  padding: 24px;
+  color: #ddd;
+  background-color: #222;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+input, button {
+  color: #eee;
+  border: none;
+  background-color: #444;
+  padding: 8px 16px 8px 16px;
+}
+
+input {
+  width: 80%;
+}
+
+</style>
+</head>
+<body>
+<img src="https://avatars2.githubusercontent.com/u/5050316?s=200&v=4" alt="dolphin logo" width="64" height="64"/>
+
+<p>In each field below, paste the full path to the resource. Click "Done" once complete.</p>
+<p>
+    To get the paths browse to the file/directory.
+    For windows, hold SHIFT then right-click and select "copy as path".
+    For MacOS right-click then hold OPTION and select "Copy as Pathname".
+</p>
+<br>
+
+<form action="/done" method="GET">
+    <label for="dolphin_path">Dolphin Path</label><br>
+    <input type="text" id="dolphin_path" name="dolphin_path"><br>
+    <br>
+    <label for="games_path">Game Directory Path</label><br>
+    <input type="text" id="games_path" name="games_path"><br>
+    <br>
+    <button>Done</button>
+</form>
+
+
+
+</body>
+</html>

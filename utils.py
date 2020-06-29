@@ -1,8 +1,12 @@
 import json
+import shlex
 from dataclasses import dataclass
 from binascii import hexlify
 import os
 from pathlib import Path
+from typing import Union
+import urllib.parse as urlparse
+from urllib.parse import parse_qs
 
 from galaxy.api.consts import LocalGameState, LicenseType, Platform
 from galaxy.api.types import Game, LocalGame, LicenseInfo
@@ -21,9 +25,23 @@ class DolphinGame:
         self.game_title = get_game_title(path)
 
 
+def get_local_file_path(file_name: str) -> Union[Path, os.PathLike]:
+    return Path(__file__).parent / file_name
+
+
 def get_manifest() -> dict:
-    with open(Path(__file__).parent / "manifest.json", 'r') as manifest:
+    with open(get_local_file_path("manifest.json"), 'r') as manifest:
         return json.load(manifest)
+
+
+def get_config() -> dict:
+    with open(get_local_file_path("user_config.json"), 'r') as config:
+        return json.load(config)
+
+
+def write_config(new_config: dict) -> None:
+    with open(get_local_file_path("user_config.json"), 'w') as config:
+        return json.dump(new_config, config, indent=2)
 
 
 def dgame2local(game: DolphinGame) -> LocalGame:
@@ -35,6 +53,7 @@ def dgame2game(game: DolphinGame) -> Game:
 
 
 def get_game_id(game_file: Path) -> str:
+    """ gets the game id for the given file by reading the first bytes """
     with game_file.open('rb') as f:
         return f.read(6).decode()
 
@@ -45,6 +64,10 @@ def get_game_title(game_file: Path) -> str:
 
 
 def get_game_platform(game_file: Path) -> Platform:
+    """
+    gets the platform for a given file. Looks at file extension, magic strings in file,
+    and finally file size to determine
+    """
     if game_file.suffix == "gcm":
         return Platform.NintendoGameCube
     if game_file.suffix == "wbfs":
@@ -61,3 +84,23 @@ def get_game_platform(game_file: Path) -> Platform:
         return Platform.NintendoGameCube
     else:
         return Platform.NintendoWii
+
+
+def parse_get_params(uri: str) -> dict:
+    """ parse url params returned from startup_config.html """
+    parsed = urlparse.urlparse(uri)
+    return {k: v[0].strip('\'\"') for k, v in parse_qs(parsed.query).items()}
+
+
+def path2subopen(path: Path) -> str:
+    """ converts a path into a safe string for subprocess calls"""
+    return shlex.quote(str(path))
+
+
+SETUP_WEB_PARAMS = {
+    "window_title": "Set Dolphin Paths",
+    "window_width": 640,
+    "window_height": 480,
+    "start_uri": f'file:///{get_local_file_path("startup_config.html")}',
+    "end_uri_regex": ".*/done.*"
+}

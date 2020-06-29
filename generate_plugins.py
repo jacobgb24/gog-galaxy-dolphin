@@ -14,9 +14,10 @@ gamecube = {"platform": Platform.NintendoGameCube.value, "guid": "c732be30-0407-
 wii = {"platform": Platform.NintendoWii.value, "guid": "c732be30-0407-463f-bc30-6d8b3809fef5"}
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Generates output binaries")
-    parser.add_argument('-o', '--output-gog', help="directory for gog plugins to output directly to", default=None)
-    parser.add_argument('-z', '--zip', action='store_true', help="Set to zip up when done")
+    parser = argparse.ArgumentParser(description="Generates output plugins")
+    output = parser.add_mutually_exclusive_group()
+    output.add_argument('-o', '--output-gog', help="directory for gog plugins to output directly to", default=None)
+    output.add_argument('-z', '--zip', action='store_true', help="Set to zip up when done for github release")
     args = parser.parse_args()
 
     base_manifest = utils.get_manifest()
@@ -50,7 +51,7 @@ if __name__ == '__main__':
         json.dump(wii_manifest, m, indent=2)
 
     if args.zip:
-        shutil.make_archive(base_dir, 'zip', base_dir)
+        shutil.make_archive(f'{base_dir}_v{base_manifest["version"]}', 'zip', base_dir)
 
 
 
