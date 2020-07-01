@@ -10,7 +10,7 @@ This codebase supports both Gamecube and Wii games, but through two copies (as G
 
 
 ## Installation
-Either generate the plugins via `generate_plugins.py` or download from the releases.
+Either generate the plugins via `generate_plugins.py` or download from the [releases page](https://github.com/jacobgb24/gog-galaxy-dolphin/releases).
 Place the two plugin folders into the correct location for GOG.
 
 Windows: `%localappdata%\GOG.com\Galaxy\plugins\installed`
