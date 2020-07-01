@@ -6,6 +6,7 @@ the directory name and manifest.
 import json
 import shutil
 import argparse
+import os
 
 import utils
 from galaxy.api.consts import Platform
@@ -30,7 +31,7 @@ if __name__ == '__main__':
     gc_path = f'{base_dir}/gog-dolphin-{gamecube["platform"]}-{gamecube["guid"]}'
     wii_path = f'{base_dir}/gog-dolphin-{wii["platform"]}-{wii["guid"]}'
 
-    ignored_files = shutil.ignore_patterns(f'{base_manifest["name"]}*', ".*", "manifest.json", __file__)
+    ignored_files = shutil.ignore_patterns(f'{base_manifest["name"]}*', ".*", "__*", "manifest.json", __file__)
 
     # gc
     shutil.rmtree(gc_path, ignore_errors=True)
@@ -51,7 +52,11 @@ if __name__ == '__main__':
         json.dump(wii_manifest, m, indent=2)
 
     if args.zip:
-        shutil.make_archive(f'{base_dir}_v{base_manifest["version"]}', 'zip', base_dir)
+        zip_name = f'{base_dir}_v{base_manifest["version"]}'
+        if os.path.exists(f'{zip_name}.zip'):
+            os.remove(f'{zip_name}.zip')
+        shutil.make_archive(zip_name, 'zip', base_dir)
+        shutil.rmtree(base_dir)
 
 
 
