@@ -1,5 +1,10 @@
 {
   "dolphin_path": "",
   "games_path": "",
-  "custom_games": []
+  "custom_launchers": [
+    {
+      "gameid": "example",
+      "dolphin": "path/to/dolphin"
+    }
+  ]
 }

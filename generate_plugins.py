@@ -7,6 +7,7 @@ import json
 import shutil
 import argparse
 import os
+import sys
 
 import utils
 from galaxy.api.consts import Platform
@@ -15,16 +16,25 @@ gamecube = {"platform": Platform.NintendoGameCube.value, "guid": "c732be30-0407-
 wii = {"platform": Platform.NintendoWii.value, "guid": "c732be30-0407-463f-bc30-6d8b3809fef5"}
 
 if __name__ == '__main__':
+
+    if sys.platform == 'win32':
+        GOG_DIR = os.environ['localappdata'] + '\\GOG.com\\Galaxy\\plugins\\installed'
+    elif sys.platform == 'darwin':
+        GOG_DIR = os.path.realpath("~/Library/Application Support/GOG.com/Galaxy/plugins/installed")
+    else:
+        GOG_DIR = None
+
     parser = argparse.ArgumentParser(description="Generates output plugins")
     output = parser.add_mutually_exclusive_group()
-    output.add_argument('-o', '--output-gog', help="directory for gog plugins to output directly to", default=None)
-    output.add_argument('-z', '--zip', action='store_true', help="Set to zip up when done for github release")
+    output.add_argument('-o', '--output-dir', help="Directory to output to. Default is GOG installed folder", nargs='?',
+                        const=GOG_DIR)
+    output.add_argument('-z', '--zip', action='store_true', help="Output a zip to current dir for github release")
     args = parser.parse_args()
 
     base_manifest = utils.get_manifest()
 
-    if args.output_gog is not None and not args.zip:
-        base_dir = args.output_gog
+    if args.output_dir is not None and not args.zip:
+        base_dir = args.output_dir
     else:
         base_dir = base_manifest["name"]
 

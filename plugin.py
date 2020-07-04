@@ -25,24 +25,25 @@ class GOGDolphinPlugin(Plugin, ABC):
     async def authenticate(self, stored_credentials=None) -> Union[NextStep, Authentication]:
         if not self.config_data['dolphin_path'] or not self.config_data['games_path']:
             return NextStep('web_session', utils.SETUP_WEB_PARAMS)
-        return Authentication("Dolphin", "Dolphin")  # don't care about authentication values
+        return Authentication("Dolphin-ID", "Dolphin")  # don't care about authentication values
 
     async def pass_login_credentials(self, step: str, credentials: Dict[str, str], cookies: List[Dict[str, str]]) \
             -> Union[NextStep, Authentication]:
         paths = utils.parse_get_params(credentials["end_uri"])
-        logger.critical(f'CREDS: {paths}')
+        logger.info(f'Got paths from setup: {paths}')
         self.config_data.update(paths)
+        # add in entry to launch melee via slippi if user set that field
+        if 'slippi_path' in paths:
+            self.config_data['custom_launchers'].append({'gameid': "GALE01", 'dolphin': paths['slippi_path']})
+            del self.config_data['slippi_path']
         utils.write_config(self.config_data)
-        return Authentication("Dolphin", "Dolphin")  # don't care about authentication values
+        return Authentication("Dolphin-ID", "Dolphin")  # don't care about authentication values
 
     async def launch_game(self, game_id):
         for game in self.games:
             if game.game_id == game_id:
-                dolphin_exe = Path(r"D:\Dolphin-x64\Dolphin.exe")
-
-                dolphin_path = Path(self.config_data['dolphin_path'] if game.dolphin_path is None else game.dolphin_path)
-                logger.critical(f'launching {game_id} via path: `{dolphin_path}` before we had `{dolphin_exe}`')
-                logger.critical(f'game path: `{game.path}`')
+                dolphin_path = self.config_data['dolphin_path'] if game.dolphin_path is None else game.dolphin_path
+                logger.info(f'launching {game_id} via path: `{dolphin_path}`')
                 process_str = f'{utils.path2subopen(dolphin_path)} -b -e {utils.path2subopen(game.path)}'
                 subprocess.Popen(shlex.split(process_str))
                 break
@@ -77,9 +78,8 @@ class GOGDolphinPlugin(Plugin, ABC):
         for file in [f for f in path.glob('**/*') if f.is_file()]:
             # only add games for the given platform
             if utils.get_game_platform(file).value == self.manifest_data["platform"]:
-                games.append(utils.DolphinGame(file))
-            # TODO look at custom config here
-
+                games.append(utils.DolphinGame(file, self.config_data))
+        logger.info(f'Found games: {games}')
         return games
 
     # need these stubbed out for API

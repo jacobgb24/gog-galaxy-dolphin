@@ -1,5 +1,6 @@
 import json
 import shlex
+import sys
 from dataclasses import dataclass
 from binascii import hexlify
 import os
@@ -19,10 +20,13 @@ class DolphinGame:
     path: Path
     dolphin_path: str = None
 
-    def __init__(self, path: Path):
+    def __init__(self, path: Path, custom_config: dict):
         self.path = path
         self.game_id = get_game_id(path)
-        self.game_title = get_game_title(path)
+        self.game_title = path.stem
+        for entry in custom_config['custom_launchers']:
+            if entry['gameid'] == self.game_id:
+                self.dolphin_path = entry['dolphin']
 
 
 def get_local_file_path(file_name: str) -> Union[Path, os.PathLike]:
@@ -56,11 +60,6 @@ def get_game_id(game_file: Path) -> str:
     """ gets the game id for the given file by reading the first bytes """
     with game_file.open('rb') as f:
         return f.read(6).decode()
-
-
-def get_game_title(game_file: Path) -> str:
-    # TODO try db first
-    return game_file.stem
 
 
 def get_game_platform(game_file: Path) -> Platform:
@@ -100,7 +99,7 @@ def path2subopen(path: Path) -> str:
 SETUP_WEB_PARAMS = {
     "window_title": "Set Dolphin Paths",
     "window_width": 640,
-    "window_height": 480,
+    "window_height": 640,
     "start_uri": f'file:///{get_local_file_path("startup_config.html")}',
     "end_uri_regex": ".*/done.*"
 }

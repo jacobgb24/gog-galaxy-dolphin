@@ -25,7 +25,12 @@ input {
   width: 80%;
 }
 
-</style>
+label {
+  display: inline-block;
+  margin-bottom: 4px;
+}
+
+    </style>
 </head>
 <body>
 <img src="https://avatars2.githubusercontent.com/u/5050316?s=200&v=4" alt="dolphin logo" width="64" height="64"/>
@@ -36,19 +41,25 @@ input {
     For windows, hold SHIFT then right-click and select "copy as path".
     For MacOS right-click then hold OPTION and select "Copy as Pathname".
 </p>
+<p>Example Windows paths: <code>"C:\Dolphin\Dolphin.exe"</code>, <code>"C:\Users\user\Games"</code></p>
+<p>Example MacOS paths: <code>/Applications/Dolphin.app</code>, <code>/Users/user/games</code></p>
 <br>
 
 <form action="/done" method="GET">
     <label for="dolphin_path">Dolphin Path</label><br>
-    <input type="text" id="dolphin_path" name="dolphin_path"><br>
+    <input type="text" id="dolphin_path" name="dolphin_path" required><br>
     <br>
     <label for="games_path">Game Directory Path</label><br>
-    <input type="text" id="games_path" name="games_path"><br>
+    <input type="text" id="games_path" name="games_path" required><br>
+    <br>
+    <hr>
+    <label for="slippi_path">Optionally, set the path for Slippi's Dolphin to launch Melee with that instead</label><br>
+    <input type="text" id="slippi_path" name="slippi_path"/><br>
     <br>
     <button>Done</button>
 </form>
 
-
-
+<script type="text/javascript">
+</script>
 </body>
 </html>
