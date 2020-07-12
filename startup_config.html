@@ -5,13 +5,16 @@
     <title>Test</title>
     <style>
 body {
-  padding: 24px;
+  padding: 16px 24px;
   color: #ddd;
   background-color: #222;
   display: block;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0px;
   text-align: center;
+}
+
+p {
+  margin: 8px 0px;
 }
 
 input, button {
@@ -36,14 +39,7 @@ label {
 <img src="https://avatars2.githubusercontent.com/u/5050316?s=200&v=4" alt="dolphin logo" width="64" height="64"/>
 
 <p>In each field below, paste the full path to the resource. Click "Done" once complete.</p>
-<p>
-    To get the paths browse to the file/directory.
-    For windows, hold SHIFT then right-click and select "copy as path".
-    For MacOS right-click then hold OPTION and select "Copy as Pathname".
-</p>
-<p>Example Windows paths: <code>"C:\Dolphin\Dolphin.exe"</code>, <code>"C:\Users\user\Games"</code></p>
-<p>Example MacOS paths: <code>/Applications/Dolphin.app</code>, <code>/Users/user/games</code></p>
-<br>
+<p id="instructions"></p>
 
 <form action="/done" method="GET">
     <label for="dolphin_path">Dolphin Path</label><br>
@@ -52,14 +48,43 @@ label {
     <label for="games_path">Game Directory Path</label><br>
     <input type="text" id="games_path" name="games_path" required><br>
     <br>
-    <hr>
-    <label for="slippi_path">Optionally, set the path for Slippi's Dolphin to launch Melee with that instead</label><br>
-    <input type="text" id="slippi_path" name="slippi_path"/><br>
-    <br>
+    <div id="slippi_div">
+         <hr>
+        <label for="slippi_path">Optionally, launch Melee with Slippi by setting the path for Slippi's Dolphin</label><br>
+        <input type="text" id="slippi_path" name="slippi_path"/><br>
+        <br>
+    </div>
+
     <button>Done</button>
 </form>
 
 <script type="text/javascript">
+    const dolphin_inp = document.getElementById("dolphin_path");
+    const games_inp = document.getElementById("games_path");
+    const instructions = document.getElementById("instructions");
+
+    // these params are set manually in utils.py
+    const platform = location.search.split("platform=")[1].split("&")[0];
+    const os = location.search.split("os=")[1];
+
+    // show a placeholder of an example path for the user's os
+    if (os === "darwin") {
+        dolphin_inp.placeholder = "e.g. /Applications/Dolphin.app";
+        games_inp.placeholder = "e.g. /Users/user/games";
+        instructions.innerText = `To get the paths, browse to the file/directory in Finder.
+                                  Right-click, hold OPTION, and select "Copy as Pathname".`;
+    }
+    else if (os === "win32") {
+        dolphin_inp.placeholder = "e.g. \"C:\\Dolphin\\Dolphin.exe\"";
+        games_inp.placeholder = "e.g. \"C:\\Users\\user\\Games\"";
+        instructions.innerText = `To get the paths, browse to the file/directory in File Explorer.
+                                  Hold SHIFT, right-click, and select "copy as path".`;
+    }
+
+    // if setting up the Wii, no need to show slippi since it's gcube
+    if (platform === "nwii") {
+        document.getElementById("slippi_div").style.display = "none";
+    }
 </script>
 </body>
 </html>

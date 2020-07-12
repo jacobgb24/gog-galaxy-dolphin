@@ -99,7 +99,8 @@ def path2subopen(path: Path) -> str:
 SETUP_WEB_PARAMS = {
     "window_title": "Set Dolphin Paths",
     "window_width": 640,
-    "window_height": 640,
-    "start_uri": f'file:///{get_local_file_path("startup_config.html")}',
+    "window_height": 480,
+    "start_uri": f'file:///{get_local_file_path("startup_config.html")}?'
+                 f'platform={get_manifest()["platform"]}&os={sys.platform}',
     "end_uri_regex": ".*/done.*"
 }
