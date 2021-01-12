@@ -10,7 +10,7 @@ This codebase supports both Gamecube and Wii games, but through two copies (as G
 
 
 ## Installation
-Either clone and generate the plugins via `python3 generate_plugins.py -o` or download from the 
+Either clone and generate the plugins via `python3 generate_plugins.py` or download from the 
 [releases page](https://github.com/jacobgb24/gog-galaxy-dolphin/releases).
 Place the two plugin folders into the correct location for GOG.
 
@@ -18,7 +18,7 @@ Windows: `%localappdata%\GOG.com\Galaxy\plugins\installed`
 
 macOS: `~/Library/Application Support/GOG.com/Galaxy/plugins/installed`
 
-Restart GOG, Go to settings -> Add games and friends -> connect platforms.
+Restart GOG, Go to Settings -> Integrations.
 Click connect for each platform and follow the instructions presented in the window.
 
 #### Manual Config

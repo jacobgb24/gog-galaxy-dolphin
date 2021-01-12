@@ -64,13 +64,8 @@ def get_game_id(game_file: Path) -> str:
 
 def get_game_platform(game_file: Path) -> Platform:
     """
-    gets the platform for a given file. Looks at file extension, magic strings in file,
-    and finally file size to determine
+    gets the platform for a given file. Looks at magic strings in file otherwise tries file size to determine
     """
-    if game_file.suffix == "gcm":
-        return Platform.NintendoGameCube
-    if game_file.suffix == "wbfs":
-        return Platform.NintendoWii
     # magic strings from dolphin
     # https://github.com/dolphin-emu/dolphin/blob/eca6cc51f977ceaae7a12883a5b7a587ee0d45f6/Source/Core/DiscIO/Volume.cpp#L46
     with game_file.open('rb') as f:
@@ -79,6 +74,7 @@ def get_game_platform(game_file: Path) -> Platform:
         f.seek(0)
         if hexlify(f.read(28)[24:]) == b'5d1c9ea3':
             return Platform.NintendoWii
+
     if game_file.stat().st_size < 2147483648:
         return Platform.NintendoGameCube
     else:

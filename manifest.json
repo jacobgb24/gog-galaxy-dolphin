@@ -2,7 +2,7 @@
     "name": "GOG_Dolphin",
     "platform": "test",
     "guid": "X",
-    "version": "0.4",
+    "version": "0.5",
     "description": "A plugin for dolphin games. Has two versions, one for gamecube and one for wii",
     "author": "jacobgb24",
     "email": "jacobldavis98@gmail.com",

@@ -24,10 +24,11 @@ if __name__ == '__main__':
     else:
         GOG_DIR = None
 
-    parser = argparse.ArgumentParser(description="Generates output plugins")
+    parser = argparse.ArgumentParser(description="Generates output plugins. "
+                                                 "By default places in GOG location. Modify with `-o`")
     output = parser.add_mutually_exclusive_group()
-    output.add_argument('-o', '--output-dir', help="Directory to output to. Default is GOG installed folder", nargs='?',
-                        const=GOG_DIR)
+    output.add_argument('-o', '--output-dir', help="Directory to output to. Default is GOG installed folder",
+                        default=GOG_DIR)
     output.add_argument('-z', '--zip', action='store_true', help="Output a zip to current dir for github release")
     args = parser.parse_args()
 
