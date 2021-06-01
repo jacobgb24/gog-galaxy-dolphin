@@ -24,6 +24,7 @@ Click connect for each platform and follow the instructions presented in the win
 #### Manual Config
 If manual configuration is needed, this can be done by editing `user_config.json`.
 
+
 ## TODO / Planned Features
 This project early on and subject to change.
 These are the main things that are planned to be worked on:
@@ -40,3 +41,12 @@ Specifically, handling tick updates, shutdowns, etc.
 - [x] Built in support for Project Slippi (this should utilize custom config, but could be streamlined).
 - [ ] Don't hard-code GOG plugin (use pip to generate directories).
 - [ ] Pass data to startup_config to be able to show slippi just for gamecube and show example paths for user OS.
+
+## Notes
+
+### Checking GoG database for game
+Look at json response for following URL. Specifically if `type` is `spam`, the game won't show.
+```
+https://gamesdb.gog.com/platforms/<PLATFORM>/external_releases/<GAMEID>
+```
+Where platform is `nwii` or `ncube` and gameid is what is listed in Dolphin
