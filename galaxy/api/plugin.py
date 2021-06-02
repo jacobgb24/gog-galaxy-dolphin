@@ -13,7 +13,7 @@ from galaxy.api.types import (
     Subscription, SubscriptionGame
 )
 from galaxy.task_manager import TaskManager
-from galaxy.api.importer import Importer, CollectionImporter
+from galaxy.api.importer import Importer, CollectionImporter, SynchroneousImporter
 
 
 logger = logging.getLogger(__name__)
@@ -104,7 +104,7 @@ class Plugin:
             self._user_presence_import_finished,
             self.user_presence_import_complete
         )
-        self._local_size_importer = Importer(
+        self._local_size_importer = SynchroneousImporter(
             self._external_task_manager,
             "local size",
             self.get_local_size,
@@ -292,7 +292,7 @@ class Plugin:
         await self._external_task_manager.wait()
         await self._internal_task_manager.wait()
         await self._connection.wait_closed()
-        logger.debug("Plugin closed")
+        logger.info("Plugin closed")
 
     def create_task(self, coro, description):
         """Wrapper around asyncio.create_task - takes care of canceling tasks on shutdown"""

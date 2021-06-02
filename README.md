@@ -50,3 +50,16 @@ Look at json response for following URL. Specifically if `type` is `spam`, the g
 https://gamesdb.gog.com/platforms/<PLATFORM>/external_releases/<GAMEID>
 ```
 Where platform is `nwii` or `ncube` and gameid is what is listed in Dolphin
+
+### Log locations:
+Windows: `"C:\ProgramData\GOG.com\Galaxy\logs\`
+
+MacOS: `/Users/Shared/GOG.com/Galaxy/Logs`
+
+Logs of interest are `GalaxyClient.log` and `plugin-<ncube|nwii>*.log`
+
+### General Debug process
+* Disconnect plugin
+* Run `python3 generate_plugins.py -c`
+* Connect plugin
+* View logs

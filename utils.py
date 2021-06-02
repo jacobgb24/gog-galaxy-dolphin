@@ -11,6 +11,7 @@ from urllib.parse import parse_qs
 
 from galaxy.api.consts import LocalGameState, LicenseType, Platform
 from galaxy.api.types import Game, LocalGame, LicenseInfo
+from galaxy.api.plugin import logger
 
 
 @dataclass
@@ -59,6 +60,7 @@ def dgame2game(game: DolphinGame) -> Game:
 def get_game_id(game_file: Path) -> str:
     """ gets the game id for the given file by reading the first bytes """
     with game_file.open('rb') as f:
+        logger.info(f"Getting game_id for {game_file.resolve()}")
         return f.read(6).decode()
 
 

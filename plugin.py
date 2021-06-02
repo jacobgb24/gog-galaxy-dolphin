@@ -10,7 +10,6 @@ import utils
 from galaxy.api.consts import Platform
 from galaxy.api.plugin import Plugin, create_and_run_plugin, logger
 from galaxy.api.types import Authentication, NextStep
-import os
 
 
 class GOGDolphinPlugin(Plugin, ABC):
@@ -49,20 +48,11 @@ class GOGDolphinPlugin(Plugin, ABC):
                 break
         return
 
-    async def get_game_time(self, game_id, context=None):
-        pass
+    # async def get_game_time(self, game_id, context=None):
+    #     pass
 
-    def tick(self):
-        pass
-        # async def update_local_games():
-        #     loop = asyncio.get_running_loop()
-        #     new_local_games_list = await loop.run_in_executor(None, self.local_games_list)
-        #     notify_list = self.backend_client.get_state_changes(self.local_games_cache, new_local_games_list)
-        #     self.local_games_cache = new_local_games_list
-        #     for local_game_notify in notify_list:
-        #         self.update_local_game_status(local_game_notify)
-        #
-        # asyncio.create_task(update_local_games())
+    # def tick(self):
+    #     logger.info("tick called")
 
     async def get_owned_games(self):
         self.games = self.get_dolphin_games()
@@ -75,19 +65,14 @@ class GOGDolphinPlugin(Plugin, ABC):
     def get_dolphin_games(self):
         games = []
         path = Path(self.config_data['games_path'])
+        logger.info(self.config_data)
+        logger.info(f"Getting games from path: {path.resolve()}")
         for file in [f for f in path.glob('**/*') if f.is_file()]:
             # only add games for the given platform
             if utils.get_game_platform(file).value == self.manifest_data["platform"]:
                 games.append(utils.DolphinGame(file, self.config_data))
         logger.info(f'Found games: {games}')
         return games
-
-    # need these stubbed out for API
-    async def install_game(self, game_id):
-        pass
-
-    async def uninstall_game(self, game_id):
-        pass
 
 
 def main():
